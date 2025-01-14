@@ -17,4 +17,7 @@ export const env = cleanEnv(process.env, {
   DB_NAME: str({ devDefault: testOnly("postgres") }),
   JWT_SECRET: str({ devDefault: testOnly("secret") }),
   JWT_EXPIRES_IN: str({ devDefault: testOnly("24h") }),
+  GOOGLE_CLIENT_ID: str({ devDefault: testOnly("google-client-id") }),
+  GOOGLE_CLIENT_SECRET: str({ devDefault: testOnly("google-client-secret") }),
+  GOOGLE_CALLBACK_URL: str({ devDefault: testOnly("http://localhost:3000/auth/google/callback") }),
 });
