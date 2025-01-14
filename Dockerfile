@@ -6,9 +6,6 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Remove node_modules and package-lock.json
-RUN rm -rf node_modules package-lock.json
-
 # Install app dependencies
 RUN npm ci
 
