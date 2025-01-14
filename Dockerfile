@@ -1,5 +1,7 @@
 FROM node:22.13.0-slim
 
+RUN rm -rf package-lock.json node_modules && npm install
+
 # Create app directory
 WORKDIR /usr/src/app
 
