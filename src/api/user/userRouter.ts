@@ -12,16 +12,6 @@ export const userRouter: Router = express.Router();
 
 userRegistry.register("User", UserSchema);
 
-// create New User
-userRegistry.registerPath({
-  method: "post",
-  path: "/users",
-  tags: ["User"],
-  responses: createApiResponse(UserSchema, "Success"),
-});
-
-userRouter.post("/", userController.createUser);
-
 userRegistry.registerPath({
   method: "get",
   path: "/users",
