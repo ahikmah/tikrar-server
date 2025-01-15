@@ -21,6 +21,6 @@ authRegistry.registerPath({
 authRouter.post("/register", authController.createUser);
 
 // Google OAuth2 URL
-authRouter.get("/auth/google", authController.oAuthRedirect);
+authRouter.get("/google", authController.oAuthRedirect);
 
-authRouter.get("/auth/google/callback", authController.oAuthLogin);
+authRouter.get("/google/callback", authController.oAuthLogin);

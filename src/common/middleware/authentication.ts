@@ -10,10 +10,15 @@ export const authenticate = (req: any, res: Response, next: NextFunction) => {
   }
 
   try {
-    const decoded = jwt.verify(token, env.JWT_SECRET);
-    req.user = decoded;
+    req.user = jwt.verify(token, env.JWT_SECRET);
     next();
   } catch (error) {
     res.status(401).send({ error: "Please authenticate" });
   }
+};
+
+export const generateToken = (data: object) => {
+  return jwt.sign(data, env.JWT_SECRET, {
+    expiresIn: env.JWT_EXPIRES_IN,
+  });
 };

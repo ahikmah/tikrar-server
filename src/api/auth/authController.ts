@@ -1,10 +1,14 @@
 import type { Request, RequestHandler, Response } from "express";
 
-import { tx } from "@/common/config/dbConfig";
 import bcrypt from "bcrypt";
+import { google } from "googleapis";
+import { StatusCodes } from "http-status-codes";
 
 import { authService } from "@/api/auth/authService";
-import { googleOAuth2Url } from "@/common/config/oAuthConfig";
+import { tx } from "@/common/config/dbConfig";
+import { googleOAuth2Client, googleOAuth2Url } from "@/common/config/oAuthConfig";
+import { generateToken } from "@/common/middleware/authentication";
+import { ServiceResponse } from "@/common/models/serviceResponse";
 import { handleServiceResponse } from "@/common/utils/httpHandlers";
 
 class AuthController {
@@ -24,7 +28,49 @@ class AuthController {
   };
 
   public oAuthLogin: RequestHandler = async (req: Request, res: Response) => {
-    // handle oAuth login
+    const { code } = req.query;
+
+    const { tokens } = await googleOAuth2Client.getToken(code as string);
+
+    googleOAuth2Client.setCredentials(tokens);
+
+    const oauth2 = google.oauth2({
+      auth: googleOAuth2Client,
+      version: "v2",
+    });
+
+    const { data } = await oauth2.userinfo.get();
+
+    if (!data.email || !data.name) {
+      const response = ServiceResponse.failure(
+        "Required fields missing in google response",
+        null,
+        StatusCodes.BAD_REQUEST,
+      );
+      return handleServiceResponse(response, res);
+    }
+
+    // check if user exists in db
+    const checkResponse = await authService.findByEmail(data.email);
+
+    if ("isExist" in checkResponse) {
+      if (!checkResponse.isExist) {
+        const payload = {
+          name: data.name,
+          email: data.email,
+          avatar: data.picture as string,
+        };
+
+        tx(async (db: any) => {
+          const serviceResponse = await authService.create(payload, db);
+          const token = generateToken({ id: serviceResponse?.responseObject?.id });
+          return res.redirect(`https://tikrar-journal.vercel.app?token=${token}`);
+        }, res);
+      } else {
+        const token = generateToken({ id: checkResponse?.data?.id });
+        return res.redirect(`https://tikrar-journal.vercel.app?token=${token}`);
+      }
+    }
   };
 }
 

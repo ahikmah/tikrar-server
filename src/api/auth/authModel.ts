@@ -5,9 +5,10 @@ extendZodWithOpenApi(z);
 
 export type Auth = z.infer<typeof AuthSchema>;
 export const AuthSchema = z.object({
+  id: z.string().uuid().optional(),
   name: z.string(),
   email: z.string().email(),
   password: z.string().optional(),
-  avatar: z.string().url(),
-  planId: z.string().uuid(),
+  avatar: z.string().url().optional(),
+  planId: z.string().uuid().optional(),
 });
