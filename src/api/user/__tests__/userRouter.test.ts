@@ -25,7 +25,7 @@ describe("User API Endpoints", () => {
   describe("GET /users/:id", () => {
     it("should return a user for a valid ID", async () => {
       // Arrange
-      const testId = "1";
+      const testId = "e5a03e0c-b6e2-4318-b688-a0c4373a5ae4";
       const expectedUser = users.find((user) => user.id === testId) as User;
 
       // Act
@@ -42,7 +42,7 @@ describe("User API Endpoints", () => {
 
     it("should return a not found error for non-existent ID", async () => {
       // Arrange
-      const testId = Number.MAX_SAFE_INTEGER;
+      const testId = "e5a03e0c-b6e2-4318-b688-a0c4373a5ae5";
 
       // Act
       const response = await request(app).get(`/users/${testId}`);
@@ -57,7 +57,7 @@ describe("User API Endpoints", () => {
 
     it("should return a bad request for invalid ID format", async () => {
       // Act
-      const invalidInput = "abc";
+      const invalidInput = 1231;
       const response = await request(app).get(`/users/${invalidInput}`);
       const responseBody: ServiceResponse = response.body;
 
@@ -78,6 +78,8 @@ function compareUsers(mockUser: User, responseUser: User) {
   expect(responseUser.id).toEqual(mockUser.id);
   expect(responseUser.name).toEqual(mockUser.name);
   expect(responseUser.email).toEqual(mockUser.email);
+  expect(responseUser.avatar).toEqual(mockUser.avatar);
+  expect(responseUser.planId).toEqual(mockUser.planId);
   expect(new Date(responseUser.createdAt)).toEqual(mockUser.createdAt);
-  expect(new Date(responseUser.updatedAt)).toEqual(mockUser.updatedAt);
+  expect(responseUser.updatedAt ? new Date(responseUser.updatedAt) : null).oneOf([mockUser.updatedAt, null]);
 }

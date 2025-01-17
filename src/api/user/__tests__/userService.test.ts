@@ -7,28 +7,30 @@ import { UserService } from "@/api/user/userService";
 
 vi.mock("@/api/user/userRepository");
 
+const mockUsers: User[] = [
+  {
+    id: "e5a03e0c-b6e2-4318-b688-a0c4373a5ae4",
+    name: "Awaliyatul Hikmah",
+    email: "imadlz15@gmail.com",
+    avatar: "https://lh3.googleusercontent.com/a/ACg8ocIwcFrWoislM17T9Yp9Kuh1_Zp5eEslvqNykzXBABuTbaJvc_d6vg=s96-c",
+    planId: null,
+    createdAt: new Date("2025-01-15T05:04:36.259Z"),
+    updatedAt: null,
+  },
+  {
+    id: "ab188782-3f97-40c3-bd68-30f7959196ba",
+    name: "Hikmah",
+    email: "hikmah@mail.com",
+    avatar: null,
+    planId: "17bec569-60a7-4291-a4ea-82309d96da3f",
+    createdAt: new Date("2025-01-15T06:20:56.834Z"),
+    updatedAt: null,
+  },
+];
+
 describe("userService", () => {
   let userServiceInstance: UserService;
   let userRepositoryInstance: UserRepository;
-
-  const mockUsers: User[] = [
-    {
-      id: 1,
-      name: "Alice",
-      email: "alice@example.com",
-      age: 42,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: 2,
-      name: "Bob",
-      email: "bob@example.com",
-      age: 21,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ];
 
   beforeEach(() => {
     userRepositoryInstance = new UserRepository();
@@ -82,7 +84,7 @@ describe("userService", () => {
   describe("findById", () => {
     it("returns a user for a valid ID", async () => {
       // Arrange
-      const testId = 1;
+      const testId = "e5a03e0c-b6e2-4318-b688-a0c4373a5ae4";
       const mockUser = mockUsers.find((user) => user.id === testId);
       (userRepositoryInstance.findByIdAsync as Mock).mockReturnValue(mockUser);
 
@@ -98,7 +100,7 @@ describe("userService", () => {
 
     it("handles errors for findByIdAsync", async () => {
       // Arrange
-      const testId = 1;
+      const testId = "e5a03e0c-b6e2-4318-b688-a0c4373a5ae4";
       (userRepositoryInstance.findByIdAsync as Mock).mockRejectedValue(new Error("Database error"));
 
       // Act
@@ -113,7 +115,7 @@ describe("userService", () => {
 
     it("returns a not found error for non-existent ID", async () => {
       // Arrange
-      const testId = 1;
+      const testId = "e5a03e0c-b6e2-4318-b688-a0c4373a5ae3";
       (userRepositoryInstance.findByIdAsync as Mock).mockReturnValue(null);
 
       // Act
