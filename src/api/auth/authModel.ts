@@ -28,3 +28,10 @@ export const GetAuthSchema = z.object({
     planId: commonValidations.planId,
   }),
 });
+
+export const GetLoginSchema = z.object({
+  body: z.object({
+    email: commonValidations.email,
+    password: commonValidations.password,
+  }),
+});

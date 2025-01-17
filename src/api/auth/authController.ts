@@ -17,6 +17,7 @@ class AuthController {
 
     // check if email already exists
     const checkResponse = await authService.findByEmail(payload.email);
+
     if ("isExist" in checkResponse) {
       if (checkResponse.isExist) {
         const response = ServiceResponse.failure("Email already exists", null, StatusCodes.CONFLICT);
@@ -30,6 +31,33 @@ class AuthController {
       const serviceResponse = await authService.create(payload, db);
       return handleServiceResponse(serviceResponse, res);
     }, res);
+  };
+
+  public loginUser: RequestHandler = async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+
+    const checkResponse = await authService.findByEmail(email);
+    if ("isExist" in checkResponse) {
+      if (!checkResponse.isExist) {
+        const response = ServiceResponse.failure("User not found", null, StatusCodes.NOT_FOUND);
+        return handleServiceResponse(response, res);
+      }
+      const user = checkResponse.data;
+
+      const isPasswordMatch = await bcrypt.compare(password, user?.password as string);
+
+      if (!isPasswordMatch) {
+        const response = ServiceResponse.failure("Invalid credentials", null, StatusCodes.UNAUTHORIZED);
+        return handleServiceResponse(response, res);
+      }
+
+      const token = generateToken({ id: user?.id });
+
+      const response = ServiceResponse.success("Login successful", { token });
+      return handleServiceResponse(response, res);
+    } else {
+      return handleServiceResponse(checkResponse, res);
+    }
   };
 
   public oAuthRedirect: RequestHandler = async (_req: Request, res: Response) => {
@@ -79,6 +107,8 @@ class AuthController {
         const token = generateToken({ id: checkResponse?.data?.id });
         return res.redirect(`https://tikrar-journal.vercel.app?token=${token}`);
       }
+    } else {
+      return handleServiceResponse(checkResponse, res);
     }
   };
 }

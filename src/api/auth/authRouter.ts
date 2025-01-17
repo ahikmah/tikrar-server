@@ -2,7 +2,7 @@ import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import express, { type Router } from "express";
 
 import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
-import { AuthSchema, GetAuthSchema } from "@/api/auth/authModel";
+import { AuthSchema, GetAuthSchema, GetLoginSchema } from "@/api/auth/authModel";
 import { validateRequest } from "@/common/utils/httpHandlers";
 import { authController } from "./authController";
 
@@ -20,6 +20,16 @@ authRegistry.registerPath({
 });
 
 authRouter.post("/register", validateRequest(GetAuthSchema), authController.registerUser);
+
+// login
+authRegistry.registerPath({
+  method: "post",
+  path: "/auth/login",
+  tags: ["Auth"],
+  responses: createApiResponse(AuthSchema, "Success"),
+});
+
+authRouter.post("/login", validateRequest(GetLoginSchema), authController.loginUser);
 
 // Google OAuth2 URL
 authRouter.get("/google/callback", authController.oAuthLogin);
