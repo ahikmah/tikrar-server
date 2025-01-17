@@ -25,7 +25,7 @@ export class AuthService {
 
       const token = generateToken({ id: user.id });
 
-      return ServiceResponse.success<Auth>("User created", { ...user.rows[0], token });
+      return ServiceResponse.success<Auth>("User created", { ...user.rows[0], token }, StatusCodes.CREATED);
     } catch (ex) {
       const errorMessage = `Error creating user: ${(ex as Error).message}`;
       logger.error(errorMessage);
