@@ -45,6 +45,17 @@ export class UserService {
       return ServiceResponse.failure("An error occurred while finding user.", null, StatusCodes.INTERNAL_SERVER_ERROR);
     }
   }
+
+  async delete(id: string, db: any): Promise<ServiceResponse<User | null>> {
+    try {
+      const user = await db.query(`DELETE FROM master."user" WHERE id = $1 RETURNING *`, [id]);
+      return ServiceResponse.success<User>("User deleted", user.rows[0]);
+    } catch (ex) {
+      const errorMessage = `Error deleting user with id ${id}:, ${(ex as Error).message}`;
+      logger.error(errorMessage);
+      return ServiceResponse.failure("An error occurred while deleting user.", null, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
 
 export const userService = new UserService();
