@@ -12,8 +12,17 @@ import { ServiceResponse } from "@/common/models/serviceResponse";
 import { handleServiceResponse } from "@/common/utils/httpHandlers";
 
 class AuthController {
-  public createUser: RequestHandler = async (req: Request, res: Response) => {
+  public registerUser: RequestHandler = async (req: Request, res: Response) => {
     const payload = req.body;
+
+    // check if email already exists
+    const checkResponse = await authService.findByEmail(payload.email);
+    if ("isExist" in checkResponse) {
+      if (checkResponse.isExist) {
+        const response = ServiceResponse.failure("Email already exists", null, StatusCodes.CONFLICT);
+        return handleServiceResponse(response, res);
+      }
+    }
 
     payload.password = await bcrypt.hash(payload.password, 10);
 
