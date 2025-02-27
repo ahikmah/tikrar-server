@@ -1,4 +1,3 @@
-import path from "node:path";
 import express, { type Request, type Response, type Router } from "express";
 import swaggerUi from "swagger-ui-express";
 
@@ -12,7 +11,4 @@ openAPIRouter.get("/swagger.json", (_req: Request, res: Response) => {
   res.send(openAPIDocument);
 });
 
-// Serve Swagger UI static files
-openAPIRouter.use("/swagger-ui", express.static(path.join(__dirname, "../../node_modules/swagger-ui-dist")));
-
-openAPIRouter.use("/", swaggerUi.serve, swaggerUi.setup(openAPIDocument, { explorer: true }));
+openAPIRouter.use("/", swaggerUi.serve, swaggerUi.setup(openAPIDocument));
